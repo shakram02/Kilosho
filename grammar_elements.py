@@ -14,16 +14,15 @@ class ElementType(Enum):
 
 # Abstract class
 class GrammarElement:
-    def __init__(self, name: str):
-        self.type = None
-        self.rule = None
+    def __init__(self, element_type, name: str):
+        self.type = element_type
+        self.rule = []
         self.name = name
 
 
 class OrOperation(GrammarElement):
     def __init__(self):
-        super().__init__("")
-        super().type = ElementType.OrOperation
+        super().__init__(ElementType.OrOperation, "")
 
 
 class Terminal(GrammarElement):
@@ -32,8 +31,7 @@ class Terminal(GrammarElement):
     """
 
     def __init__(self, name: str):
-        super().__init__(name)
-        super.type = ElementType.Terminal
+        super().__init__(ElementType.Terminal, name)
 
     @staticmethod
     def create_epsilon():
@@ -52,10 +50,7 @@ class NonTerminal(GrammarElement):
     """
 
     def __init__(self, name: str):
-        super().__init__(name)
-        super.type = ElementType.NonTerminal
-        self.name = ""
-        self.rule = []
+        super().__init__(ElementType.NonTerminal, name)
 
     def and_with(self, other: GrammarElement):
         """
@@ -77,3 +72,10 @@ class NonTerminal(GrammarElement):
         self.rule.append(OrOperation())
         self.rule.append(other)
         return self
+
+    def has_epsilon(self):
+        for el in self.rule:
+            if el.type == ElementType.Epsilon:
+                return True
+
+        return False
