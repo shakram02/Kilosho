@@ -1,5 +1,4 @@
 from grammar_elements import *
-import itertools
 
 # For doing DFS without cycling
 __non_terminal_visited = []
@@ -23,10 +22,6 @@ def __get_non_terminal_children(element: NonTerminal):
         for item in __get_non_terminal_children(e):
             result.append(item)
 
-            # if len(sub_result) != 0:
-            #     result.append(list(itertools.chain.from_iterable(sub_result)))
-            # result.append(sub_result)
-
     return result
 
 
@@ -39,11 +34,5 @@ def get_non_terminal_children(element: NonTerminal):
     __non_terminal_visited = []
     # Do DFS
     result = __get_non_terminal_children(element)
-
-    # for item in :
-    #     if type(item) is GrammarElement:
-    #         result.append(item)
-    #     elif type(item) is list and len(item) != 0:
-    #         result.append(list(itertools.chain.from_iterable(item)))
 
     return result

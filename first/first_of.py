@@ -1,52 +1,61 @@
 from grammar_elements import *
+from grammar_utils.get_nonterminal_children import get_non_terminal_children
+
+# Don't cycle
+__first_of_visited = []
 
 
-def first(el: GrammarElement):
-    will_add = True
-    has_epsilon = False
-
-    if el.type == ElementType.Terminal:
-        return el
-
-    for e in el.rule:
-        pass
-
-    pass
-
-
-def has_first_epsilon(el: GrammarElement):
+def has_first_epsilon(el: NonTerminal):
     """
-    Finds out if a production contains an epsilon for `first` function 
+    Epsilon is added to first, iff the non terminal and all its children have an epsilon 
     """
+    return el.has_epsilon() and all([child.has_epsilon() for child in get_non_terminal_children(el)])
 
-    # The element is a terminal
-    if el.type == ElementType.Terminal:
-        return False
 
-    # The element is an epsilon
-    if el.type == ElementType.Epsilon:
-        return True
+def __first_of(parent: NonTerminal):
+    """
+    Returns the first of this non terminal, without considering the epsilons
+    """
+    global __first_of_visited
+    result = []
+    if len(parent.rule) == 0:
+        return []  # Non terminal has no children
 
-    have_epsilon = False
+    for (i, current_element) in enumerate(parent.rule):
 
-    for e in el.rule:
+        if i == 0 and current_element.type == ElementType.Terminal:
+            result.append(current_element)
 
-        if e.type == ElementType.Epsilon:
-            have_epsilon = True
+        previous_element = parent.rule[i - 1]
 
-        # Nothing to do for terminals
-        if e.type != ElementType.NonTerminal:
+        if current_element in __first_of_visited or current_element.type == ElementType.OrOperation:
             continue
 
-        # Deep scanning of e if it's a non terminal
-        have_epsilon = has_first_epsilon(e)
+        elif previous_element.type == ElementType.OrOperation \
+                and current_element.type == ElementType.Terminal:
+            result.append(current_element)
 
-        # Shallow scanning of e, a child didn't have an epsilon
-        # nothing more to be done return false
-        if not e.has_epsilon() and have_epsilon is True:
-            return False
+        # Met an OR operation, recursively check if `el` is in the `first` of the following
+        elif (previous_element.type == ElementType.OrOperation or i == 0) \
+                and current_element.type == ElementType.NonTerminal:
+            # print("  ", current_element.name, "  ", current_element.type)
+            # Append before diving, to avoid cycles
+            __first_of_visited.append(current_element)
+            for e in __first_of(current_element):
+                result.append(e)
 
-        elif e.has_epsilon() and have_epsilon is False:
-            have_epsilon = True
+    return result
 
-    return have_epsilon
+
+def get_first(el: NonTerminal):
+    """
+    Returns the `first` of a given non-terminal element
+    :param el: 
+    :return: 
+    """
+    result = __first_of(el)
+
+    if has_first_epsilon(el):
+        result.append(Terminal.create_epsilon())
+
+    return result
