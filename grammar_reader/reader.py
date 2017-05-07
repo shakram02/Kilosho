@@ -9,6 +9,10 @@ EPSILON_SYMBOL = '\L'
 
 
 def from_string(string):
+    """
+    :param string: a string that contains the syntax grammar rule definitions
+    :return: a list of NonTerminal objects with their corresponding rules defined
+    """
     non_terminals = []
     # split by lines ending in '\n'  not followed by an OR_SYMBOL
     lines = re.split(r'\n[^' + OR_SYMBOL + ']', string)
@@ -47,10 +51,11 @@ def from_string(string):
     return non_terminals
 
 
-def from_file(file):
-    content = open(file).read()
+def from_file(path):
+    """
+    :param path: a string of the path of the file containing the syntax grammar rule definitions
+    :return: a list of NonTerminal objects with their corresponding rules defined 
+    """
+    content = open(path).read()
     return from_string(content)
 
-
-from_string("""A ::= B | c
-        B ::= b | \L""")
