@@ -71,6 +71,12 @@ class Terminal(GrammarElement):
 
         return False
 
+    def __str__(self):
+        return str({'name': self.name, 'rule': self.rule, 'type': self.type.name})
+
+    def __repr__(self):
+        return str({'name': self.name, 'rule': self.rule, 'type': self.type.name})
+
 
 class NonTerminal(GrammarElement):
     """
