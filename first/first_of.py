@@ -1,5 +1,6 @@
 from grammar_elements import *
 from grammar_utils.get_nonterminal_children import get_non_terminal_children
+from generic_helpers.decorators import memoize
 
 # Don't cycle
 __first_of_visited = []
@@ -7,11 +8,12 @@ __first_of_visited = []
 
 def has_first_epsilon(el: NonTerminal):
     """
-    Epsilon is added to first, iff the non terminal and all its children have an epsilon 
+    Epsilon is added to first, iff the non terminal has and epsilon or all its children have an epsilon 
     """
-    return el.has_epsilon() and all([child.has_epsilon() for child in get_non_terminal_children(el)])
+    return el.has_epsilon() or all([child.has_epsilon() for child in get_non_terminal_children(el)])
 
 
+@memoize
 def __first_of(parent: NonTerminal):
     """
     Returns the first of this non terminal, without considering the epsilons
