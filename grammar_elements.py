@@ -79,6 +79,7 @@ class NonTerminal(GrammarElement):
 
     def __init__(self, name: str):
         super().__init__(ElementType.NonTerminal, name)
+        self.__last_end_loc = 0
 
     def and_with(self, other: GrammarElement):
         """
@@ -111,3 +112,37 @@ class NonTerminal(GrammarElement):
             if el.type == ElementType.Epsilon:
                 return True
         return False
+
+    def __iter__(self):
+        """
+        Initializes the iterator
+        :return: 
+        """
+        self.__last_end_loc = 0
+        return self
+
+    def __next__(self):
+        """
+        Returns a chunk of the non-terminal that's between 2 or operations
+        i.e X => ab | X | c
+        calls to next will return: ab , X , c consecutively
+        :return: 
+        """
+        next_chunk = []
+        current_index = self.__last_end_loc
+
+        # Termination condition, reached the end of the rule
+        if self.__last_end_loc == len(self.rule):
+            raise StopIteration()
+
+        # Loop until you've hit an Or operation or hit the end
+        while current_index < len(self.rule) \
+                and self.rule[current_index].type != OrOperation:
+            next_chunk.append(self.rule[current_index])
+            current_index += 1
+
+        # Current index will be pointing at the Or Element, start from the
+        # element next to the last or
+        self.__last_end_loc = current_index + 1
+
+        return next_chunk
