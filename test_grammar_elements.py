@@ -17,5 +17,5 @@ class GrammarTests(unittest.TestCase):
         x = NonTerminal("X")
         # x -> a | b
         x.and_with(a).or_with(b)
-        self.assertEqual(len(x.rule), 3, "Rule element count mismatch, "
-                                         "should be 3: 2 terminals and 1 operator")
+        self.assertEqual(len(x.productions), 2, "Rule element count mismatch, "
+                                         "should be 2")

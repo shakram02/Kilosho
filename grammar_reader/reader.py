@@ -40,7 +40,7 @@ def from_string(string):
                 else:
                     grammar_element = Terminal(grammar_element)
 
-            # add grammar_element to the non_terminal rule
+            # add grammar_element to the non_terminal productions
             if rule_split[i - 1] == OR_SYMBOL:
                 non_terminal.or_with(grammar_element)
             else:
@@ -50,14 +50,15 @@ def from_string(string):
         # append the found non_terminal to the resultant list
         non_terminals_list.append(non_terminal)
 
-    # add correct references for NonTerminal objects in every rule
+    # add correct references for NonTerminal objects in every productions
     for non_terminal in non_terminals_list:
-        for i, element in enumerate(non_terminal.rule):
-            if element.type == ElementType.NonTerminal:
-                try:
-                    non_terminal.rule[i] = non_terminals_dict[element.name]
-                except:
-                    raise ValueError('Non terminal "' + element.name + '" is not defined.')
+        for production in non_terminal.productions:
+            for i, element in enumerate(production):
+                if element.type == ElementType.NonTerminal:
+                    try:
+                        production[i] = non_terminals_dict[element.name]
+                    except:
+                        raise ValueError('Non terminal "' + element.name + '" is not defined.')
 
     # return a list of the NonTerminal objects
     return non_terminals_list
@@ -70,3 +71,4 @@ def from_file(path):
     """
     content = open(path).read()
     return from_string(content)
+

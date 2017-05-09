@@ -62,7 +62,7 @@ def get_first(el: NonTerminal):
 
 
 def has_epsilon_in_list(list):
-    return all([el.type == ElementType.Epsilon for el in list])
+    return any([el.type == ElementType.Epsilon for el in list])
 
 
 def get_first_of_list(list_of_non_terminals):

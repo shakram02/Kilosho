@@ -10,12 +10,13 @@ class memoize(object):
     def my_fn(stuff):
         # Do stuff
     """
+
     def __init__(self, fn):
         self.fn = fn
         self.memocache = {}
 
     def __call__(self, *args, **kwargs):
-        memokey = ( args, tuple( sorted(kwargs.items()) ) )
+        memokey = (args, tuple(sorted(kwargs.items())))
         if memokey in self.memocache:
             return self.memocache[memokey]
         else:
