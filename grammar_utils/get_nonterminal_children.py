@@ -11,16 +11,16 @@ def __get_non_terminal_children(element: NonTerminal):
 
     global __non_terminal_visited
     result = []
+    for production in element.productions:
+        for e in production:
 
-    for e in element.rule:
+            if e.type != ElementType.NonTerminal or e in __non_terminal_visited:
+                continue
 
-        if e.type != ElementType.NonTerminal or e in __non_terminal_visited:
-            continue
-
-        __non_terminal_visited.append(e)
-        result.append(e)
-        for item in __get_non_terminal_children(e):
-            result.append(item)
+            __non_terminal_visited.append(e)
+            result.append(e)
+            for item in __get_non_terminal_children(e):
+                result.append(item)
 
     return result
 

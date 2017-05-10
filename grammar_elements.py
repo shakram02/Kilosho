@@ -20,11 +20,25 @@ class GrammarElement:
 
     def __init__(self, element_type, name: str):
         self.type = element_type
-        self.rule = []
+        self.productions = [[]]
+        self.current_production_index = 0
         self.name = name
 
     def __str__(self):
         return "Name: " + self.name + ", Type: " + self.type.name
+
+    def __hash__(self):
+        return id(self)
+
+    def has_epsilon(self):
+        """
+        Tells whether the non terminal has an epsilon in its definition 
+        """
+        for production in self.productions:
+            for el in production:
+                if el.type == ElementType.Epsilon:
+                    return True
+        return False
 
 
 class OrOperation(GrammarElement):
@@ -71,6 +85,15 @@ class Terminal(GrammarElement):
 
         return False
 
+    def __str__(self):
+        return str({'name': self.name, 'rule': self.productions, 'type': self.type.name})
+
+    def __repr__(self):
+        return str({'name': self.name, 'rule': self.productions, 'type': self.type.name})
+
+    def __hash__(self):
+        return super.__hash__(self)
+
 
 class NonTerminal(GrammarElement):
     """
@@ -89,7 +112,7 @@ class NonTerminal(GrammarElement):
         :return Self, ( a context to allow chaining )
         """
 
-        self.rule.append(other)
+        self.productions[self.current_production_index].append(other)
         return self  # Allow chaining
 
     def or_with(self, other: GrammarElement):
@@ -99,15 +122,8 @@ class NonTerminal(GrammarElement):
         :return: Self, ( a context to allow chaining )
         """
 
-        self.rule.append(OrOperation())
-        self.rule.append(other)
+        self.current_production_index += 1
+        self.productions.append([other])
         return self
 
-    def has_epsilon(self):
-        """
-        Tells whether the non terminal has an epsilon in its definition 
-        """
-        for el in self.rule:
-            if el.type == ElementType.Epsilon:
-                return True
-        return False
+

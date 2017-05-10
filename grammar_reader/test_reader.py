@@ -13,12 +13,10 @@ class TestFirst(unittest.TestCase):
 
         # assert first NonTerminal is found correctly
         self.assertEqual(result[0].type, ElementType.NonTerminal)
-        self.assertEqual(result[0].rule[0].type, ElementType.NonTerminal)
-        self.assertEqual(result[0].rule[1].type, ElementType.OrOperation)
-        self.assertEqual(result[0].rule[2].type, ElementType.Terminal)
+        self.assertEqual(result[0].productions[0][0].type, ElementType.NonTerminal)
+        self.assertEqual(result[0].productions[1][0].type, ElementType.Terminal)
 
         # assert second NonTerminal is found correctly
         self.assertEqual(result[1].type, ElementType.NonTerminal)
-        self.assertEqual(result[1].rule[0].type, ElementType.Terminal)
-        self.assertEqual(result[1].rule[1].type, ElementType.OrOperation)
-        self.assertEqual(result[1].rule[2].type, ElementType.Epsilon)
+        self.assertEqual(result[1].productions[0][0].type, ElementType.Terminal)
+        self.assertEqual(result[1].productions[1][0].type, ElementType.Epsilon)

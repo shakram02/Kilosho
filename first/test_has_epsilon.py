@@ -11,7 +11,7 @@ class TestHasEpsilon(unittest.TestCase):
         :return: 
         """
         w = NonTerminal("W")
-        # w -> a | (E
+        # w -> a | \L
         w.and_with(Terminal("a")).or_with(Terminal.create_epsilon())
         self.assertTrue(has_first_epsilon(w))
 
