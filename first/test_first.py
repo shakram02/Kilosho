@@ -74,6 +74,6 @@ class TestFirst(unittest.TestCase):
         y.and_with(z)
         # Z => c | dc  <<=== No Epsilon here
         z.and_with(c).or_with(d).and_with(c)
-        # W => a | X | Y | (E
-        w.and_with(a).or_with(x).or_with(y).or_with(Terminal.create_epsilon())
+        # W => a | X | Y
+        w.and_with(a).or_with(x).or_with(y)
         self.assertEqual(get_first(w), [a, b, c, d])

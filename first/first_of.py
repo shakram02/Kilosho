@@ -14,7 +14,8 @@ def has_first_epsilon(el: GrammarElement):
     if el.type == ElementType.Terminal or el.type == ElementType.Epsilon:
         return False
     else:  # in case of a non terminal
-        return el.has_epsilon() or all([child.has_epsilon() for child in get_non_terminal_children(el)])
+        non_terminal_children = get_non_terminal_children(el)
+        return el.has_epsilon() or ( all([child.has_epsilon() for child in non_terminal_children]) and len(non_terminal_children) > 0)
 
 
 @memoize
@@ -73,8 +74,3 @@ def get_first_of_list(list_of_non_terminals):
     else:
         return first
 
-result = reader.from_string("""E ::= T E'
-E' ::= + T E' | \L
-T ::= F T'
-T' ::= * F T' | \L
-F ::= ( E ) | id""")
