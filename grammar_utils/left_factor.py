@@ -1,42 +1,62 @@
 from grammar_elements import *
 
-__current_factor = []
+
+def get_left_factored(n: NonTerminal):
+    pass
 
 
-def left_factor(n: NonTerminal):
+def factor_out(n: NonTerminal):
+    """
+    Returns the common left factored elements in a given non terminal
+    and also the un-factor-able elements
+    :param n: Non terminal to factor out
+    :return: Common elements in the non terminal
+    """
     if len(n.rule) == 0:
         return None
 
+    sub_elements = __setup_left_factoring(n)
+
+    if len(sub_elements) == 1:
+        return sub_elements[0]
+
+    common = []
+    uncommon = []
+    prefix_dict = {}
+
+    return common, uncommon
+
+
+def get_sublist(x: list, y: list):
+    """
+    Finds a sublist in 2 lists 
+    :return: List containing the intersection between 2 lists
+    """
+    common = []
+
+    if len(x) < len(y):
+        shorter_len = len(x)
+    else:
+        shorter_len = len(y)
+
+    for i in range(0, shorter_len):
+        if x[i] == y[i]:
+            common.append(x[i])
+        else:
+            break
+
+    return common
+
+
+def __setup_left_factoring(n: NonTerminal):
+    """
+    Prepares for left-factoring, this is moved here for sanity
+    :return: A length-sorted list of grammar sub-lists in the non terminal  
+    """
     sub_elements = []
-
-    global __current_factor
-    __current_factor = []
-
     # Add all the chunks of a non-terminal to a list
     # to prepare for left factoring
     for chunk in n:
         sub_elements.append(chunk)
 
-    if len(sub_elements) == 1:
-        return sub_elements[0]
-
-    sub_elements.sort(key=lambda x: len(x))
-
-    key_chunk = sub_elements[0]
-    common = get_sublist(key_chunk, sub_elements[1])
-
-    for i in range(2, len(sub_elements)):
-        # For all the other elements after the first one
-        new_common = get_sublist(common, sub_elements[i])
-
-        if len(common) == 0:
-            return None
-
-        if len(new_common) < len(common):
-            common = new_common
-
-    return common
-
-
-def get_sublist(x: list, y: list):
-    return []
+    return sub_elements

@@ -26,6 +26,9 @@ class GrammarElement:
     def __str__(self):
         return "Name: " + self.name + ", Type: " + self.type.name
 
+    def __repr__(self):
+        return self.__str__()
+
 
 class OrOperation(GrammarElement):
     def __init__(self):
@@ -121,6 +124,24 @@ class NonTerminal(GrammarElement):
         self.__last_end_loc = 0
         return self
 
+    def __eq__(self, other):
+        if self.name != other.name:
+            return False
+
+        if self.type != other.type:
+            return False
+
+        if len(self.rule) != len(self.rule):
+            return False
+
+        for i in range(0, len(self.rule)):
+            if self.rule[i] != other.rule[i]:
+                return False
+        return True
+
+    def __ne__(self, other):
+        return not self == other
+
     def __next__(self):
         """
         Returns a chunk of the non-terminal that's between 2 or operations
@@ -128,21 +149,28 @@ class NonTerminal(GrammarElement):
         calls to next will return: ab , X , c consecutively
         :return: 
         """
+
         next_chunk = []
         current_index = self.__last_end_loc
 
         # Termination condition, reached the end of the rule
-        if self.__last_end_loc == len(self.rule):
+        if self.__last_end_loc >= len(self.rule):
             raise StopIteration()
 
         # Loop until you've hit an Or operation or hit the end
-        while current_index < len(self.rule) \
-                and self.rule[current_index].type != OrOperation:
+        while current_index < len(self.rule):
+            if self.rule[current_index].type != ElementType.Terminal \
+                    and self.rule[current_index].type != ElementType.NonTerminal:
+                break
+
             next_chunk.append(self.rule[current_index])
-            current_index += 1
+            current_index = current_index + 1
 
         # Current index will be pointing at the Or Element, start from the
         # element next to the last or
         self.__last_end_loc = current_index + 1
 
         return next_chunk
+
+    def __hash__(self):
+        return self.name.__hash__() + self.rule.__hash__()
