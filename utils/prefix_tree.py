@@ -11,9 +11,16 @@ class PrefixNode:
         # Grammar element arrays
         self.alts = []
 
+    def __str__(self):
+        return "Prefix: \"{}\"".format(self.prefix) + " Children: \'{}\'".format(self.children) \
+               + " Alts:\"{}\"".format(self.alts)
+
+    def __repr__(self):
+        return self.__str__()
+
     def get_child_named(self, el_name: str):
         for (i, child) in enumerate(self.children):
-            if child.name == el_name:
+            if child.prefix == el_name:
                 return i
 
         return None
@@ -28,7 +35,8 @@ class PrefixTree:
     def __init__(self, g: NonTerminal):
         # Dictionary with key = element name, val = tree
         self.children = {}
-        self.__prefix_table = {}
+        # Table of factored out elements
+        self.__factored_table = {}
         self.non_terminal = g
         self.create_tree()
 
@@ -78,29 +86,74 @@ class PrefixTree:
 
         # Leaf of the tree is the full alternative, and all the previous
         # nodes are the prefix
-        alt_str = PrefixTree.__to_string(full_alt)
+        alt_str = PrefixTree.__to_string(full_alt)[0:-1]
 
         start_node.alts.append(full_alt)
-        if alt_str not in self.__prefix_table.keys():
-            self.__prefix_table[alt_str] = []
+        if alt_str not in self.__factored_table.keys():
+            self.__factored_table[alt_str] = []
 
-        self.__prefix_table[alt_str].append(full_alt)
+        self.__factored_table[alt_str].append(full_alt)
 
-    def extract_prefixes(self):
+    def get_factored_out(self):
+        """
+        Returns the terminals that can be factored out
+        """
         prefixes = {}
-        for key in self.__prefix_table.keys():
-            alts = self.__prefix_table[key]
-            if len(alts) > 1:
-                prefixes[key] = alts
+        for key in self.__factored_table.keys():
+            alts = self.__factored_table[key]
+            prefixes[key] = alts
+
+        PrefixTree.__add_leftovers(prefixes)
 
         return prefixes
 
+    @staticmethod
+    def __add_leftovers(prefixes: dict):
+        """
+        Get the leftovers, those who have exact match with another prefix
+        i.e, ab | abc | abd --> ab will be in the node a, abc & abd will be in the path a-b
+        so we add the alternative ab to the list, and then will be translated to epsilon when
+        generating the new non terminal
+        :param prefixes: Table containing prefixes with leftovers 
+        """
+        # Sort keys by length to get the leftovers in the right way
+        keys = sorted(prefixes.keys(), key=lambda x: len(x))
+
+        for key in keys:
+            leftover_key = key[0:-1]
+            if len(leftover_key) == 0:
+                continue
+
+            if leftover_key in keys:
+                # This is a leftover
+                leftovers = prefixes[leftover_key]
+
+                # this filters the items for the following case
+                # ab, ax, a are children of node 'a'
+                # abc, abd are children of node 'ab' -> extract the 'ab' for the 'a' node
+                # and add it to the 'ab' node
+                filtered = filter(lambda x: PrefixTree.__to_string(x) == key, leftovers)
+                for alt in filtered:
+                    prefixes[key].append(alt)
+                    prefixes[leftover_key].remove(alt)
+
+                if len(prefixes[leftover_key]) == 0:
+                    del prefixes[leftover_key]
+
     def get_alternatives_at(self, start_node: PrefixNode, node_prefix: str):
+        """
+        Gets the alternatives of a non-terminal with a given prefix starting 
+        from a given node, i.e searches the tree for some prefix 
+        """
         if start_node.prefix == node_prefix:
             return start_node.alts
         else:
+            alts = []
             for child in start_node.children:
-                self.get_alternatives_at(child, node_prefix)
+                for alt in self.get_alternatives_at(child, node_prefix):
+                    alts.append(alt)
+
+            return alts
 
     def get_tree_head(self, prefix):
         if prefix in self.children.keys():
