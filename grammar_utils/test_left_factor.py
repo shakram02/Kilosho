@@ -33,6 +33,8 @@ class TestLeftFactor(unittest.TestCase):
             .or_with(Terminal("c")).and_with(Terminal("d")).and_with(Terminal("f")).and_with(NonTerminal("B"))
 
         factored = left_factor(x)
+        for alt in factored:
+            print("alt:", alt)
 
         self.assertTrue([Terminal("a"), NonTerminal("A'")] in factored)
         self.assertTrue([Terminal("c"), Terminal("d"), NonTerminal("A''")] in factored)

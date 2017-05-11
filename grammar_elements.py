@@ -132,12 +132,6 @@ class NonTerminal(GrammarElement):
         if self.type != other.type:
             return False
 
-        if len(self.rule) != len(self.rule):
-            return False
-
-        for i in range(0, len(self.rule)):
-            if self.rule[i] != other.rule[i]:
-                return False
         return True
 
     def __ne__(self, other):
