@@ -23,26 +23,21 @@ def left_factor(n: NonTerminal):
         # Don't create a rule if the only alternative is the prefix itself
         if len(rules) == 1 and __to_string(rules[0]) == key:
 
-            for el in rules[0]:
-                out_non_terminal.rule.append(el)
-                # Add an OR operation if there is another non-terminals present
+            out_non_terminal.rule = out_non_terminal.rule + rules[0]
+            # Add an OR operation if there is another non-terminals present
 
             if i < len(factored) - 1:
                 out_non_terminal.rule.append(OrOperation())
 
             continue
 
-        # Returns the prefix elements: Terminal("a"), Terminal("b")
-        (prefix_elements, prefixless_rules) = __remove_prefix(key, rules)
-
-        # Creates a new non-terminal for factored out elements, ex.: Y'
-        non_terminal = __create_factored_non_terminal(n.name, prefixless_rules, dash_count)
+        (prefix_elements, rules) = __remove_prefix(key, rules)
+        non_terminal = __create_factored_non_terminal(n.name, rules, dash_count)
         dash_count += 1
 
         # Concatenates newly generated non-terminals with the factored elements
         # A' will become abY', Y'' will become abY''
-        for element in prefix_elements:
-            out_non_terminal.rule.append(element)
+        out_non_terminal.rule = out_non_terminal.rule + prefix_elements
 
         out_non_terminal.rule.append(non_terminal)
 
@@ -62,11 +57,9 @@ def __remove_prefix(prefix: str, rules: list):
     :return: Common terms that will remain in the source non-terminal
     """
 
-    common_terms = []
     output_rules = []
     # Extract the prefix rule alone
-    for i in range(0, len(prefix)):
-        common_terms.append(rules[0][i])
+    common_terms = rules[0][0:len(prefix)]
 
     for rule in rules:
         rule_cp = rule[:]
