@@ -49,6 +49,23 @@ class TestPrefixTree(unittest.TestCase):
         self.assertEqual(alts_ac, factored['ac'])
         self.assertEqual(alts_bc, factored['bc'])
 
+    def test_lecture(self):
+        x = NonTerminal("X") \
+            .and_with(Terminal("a")).and_with(Terminal("b")).and_with(NonTerminal("B")) \
+            .or_with(Terminal("a")).and_with(NonTerminal("B")) \
+            .or_with(Terminal("c")).and_with(Terminal("d")).and_with(Terminal("g")) \
+            .or_with(Terminal("c")).and_with(Terminal("d")).and_with(Terminal("e")).and_with(NonTerminal("B")) \
+            .or_with(Terminal("c")).and_with(Terminal("d")).and_with(Terminal("f")).and_with(NonTerminal("B"))
+        tree = PrefixTree(x)
+        factored = tree.get_factored_out()
+
+        self.assertTrue([Terminal("a"), NonTerminal("B")] in factored['a'])
+        self.assertTrue([Terminal("a"), Terminal("b"), NonTerminal("B")] in factored['a'])
+
+        self.assertTrue([Terminal("c"), Terminal("d"), Terminal("g")] in factored['cd'])
+        self.assertTrue([Terminal("c"), Terminal("d"), Terminal("e"), NonTerminal("B")] in factored['cd'])
+        self.assertTrue([Terminal("c"), Terminal("d"), Terminal("f"), NonTerminal("B")] in factored['cd'])
+
 
 if __name__ == '__main__':
     unittest.main()

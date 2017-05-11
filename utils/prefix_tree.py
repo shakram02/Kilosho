@@ -99,6 +99,11 @@ class PrefixTree:
         Returns the terminals that can be factored out
         """
         prefixes = {}
+
+        for key in self.children.keys():
+            head = self.children[key]
+            self.__create_constellations(head)
+
         for key in self.__factored_table.keys():
             alts = self.__factored_table[key]
             prefixes[key] = alts
@@ -106,6 +111,33 @@ class PrefixTree:
         PrefixTree.__add_leftovers(prefixes)
 
         return prefixes
+
+    def __create_constellations(self, head: PrefixNode):
+        """
+        Reduces the nodes in the prefix tree by trying to bring single elements in nodes to higher nodes
+        i.e abc | ab  will be added as ab-c , a-b those 2 alternatives will be collected together 
+        as a-bc, a-b
+        """
+        for child in head.children:
+            self.__create_constellations(child)
+
+        # At the leaves of the tree
+
+        # Return if the node is already has more than 1 factor
+        if len(head.alts) != 1 or head.parent is None:
+            return
+
+        # Move the child's alternatives to its parent
+        alt = head.alts[0]
+        head.parent.alts.append(alt)
+        head.alts = []
+
+        # Update the entries in the factored out table
+        alt_prefix = PrefixTree.__to_string(alt)[0:-1]
+        alt_parent_prefix = alt_prefix[0:-1]
+
+        self.__factored_table[alt_parent_prefix].append(alt)
+        del self.__factored_table[alt_prefix]
 
     @staticmethod
     def __add_leftovers(prefixes: dict):
