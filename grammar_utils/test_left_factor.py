@@ -24,10 +24,15 @@ class TestLeftFactor(unittest.TestCase):
         self.assertTrue([Terminal("a"), NonTerminal("X'")] in factored)
         self.assertTrue([NonTerminal("Y")] in factored)
 
-        # def test_fail_get_left_factor_with_non_terminals(self):
-        #     x = NonTerminal("X") \
-        #         .and_with(Terminal("a")).and_with(NonTerminal("Y")) \
-        #         .or_with(Terminal("a")).and_with(NonTerminal("Y")) \
-        #         .or_with(NonTerminal("Z"))  # Breaks the left factor
-        #
-        #     self.assertTrue(False)
+    def test_lecture(self):
+        x = NonTerminal("A") \
+            .and_with(Terminal("a")).and_with(Terminal("b")).and_with(NonTerminal("B")) \
+            .or_with(Terminal("a")).and_with(NonTerminal("B")) \
+            .or_with(Terminal("c")).and_with(Terminal("d")).and_with(Terminal("g")) \
+            .or_with(Terminal("c")).and_with(Terminal("d")).and_with(Terminal("e")).and_with(NonTerminal("B")) \
+            .or_with(Terminal("c")).and_with(Terminal("d")).and_with(Terminal("f")).and_with(NonTerminal("B"))
+
+        factored = left_factor(x)
+
+        self.assertTrue([Terminal("a"), NonTerminal("A'")] in factored)
+        self.assertTrue([Terminal("c"), Terminal("d"), NonTerminal("A''")] in factored)

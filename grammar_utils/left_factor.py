@@ -12,7 +12,10 @@ def left_factor(n: NonTerminal):
     # Dict. of prefixes its list of non terminals
     factored = tree.get_factored_out()
     dash_count = 1
-    for (i, key) in enumerate(factored.keys()):
+
+    # Use sorted to ensure the order of elements at each separate runs
+    # so the tests don't fail
+    for (i, key) in enumerate(sorted(factored.keys(), key=lambda x: len(x))):
         # Returns the prefix as a string and the factored elements, ex. (Given n: NonTerminal("Y"):
         # 'ab' -> [Terminal("a"), Terminal("b"), NonTerminal("X")], [Terminal("a"), Terminal("b"), Terminal("d")]
         rules = factored[key]
@@ -32,9 +35,7 @@ def left_factor(n: NonTerminal):
         # Returns the prefix elements: Terminal("a"), Terminal("b")
         (prefix_elements, prefixless_rules) = __remove_prefix(key, rules)
 
-        # Creates new non-terminals for factored out elements, ex.:
-        # Y'  -> NonTerminal("X")
-        # Y'' -> Terminal("d")
+        # Creates a new non-terminal for factored out elements, ex.: Y'
         non_terminal = __create_factored_non_terminal(n.name, prefixless_rules, dash_count)
         dash_count += 1
 
@@ -92,7 +93,7 @@ def __create_factored_non_terminal(name: str, rules: list, dash_count: int):
     """
     nt = NonTerminal(name + (dash_count * '\''))
     for (i, rule) in enumerate(rules):
-        nt.rule.append(rule)
+        nt.rule = nt.rule + rule
         if i < len(rules) - 1:
             nt.rule.append(OrOperation())
 
