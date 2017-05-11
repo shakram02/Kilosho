@@ -1,7 +1,6 @@
+from generic_helpers.decorators import memoize
 from grammar_elements import *
 from grammar_utils.get_nonterminal_children import get_non_terminal_children
-from generic_helpers.decorators import memoize
-from grammar_reader import reader
 
 # Don't cycle
 __first_of_visited = []
@@ -15,7 +14,8 @@ def has_first_epsilon(el: GrammarElement):
         return False
     else:  # in case of a non terminal
         non_terminal_children = get_non_terminal_children(el)
-        return el.has_epsilon() or ( all([child.has_epsilon() for child in non_terminal_children]) and len(non_terminal_children) > 0)
+        return el.has_epsilon() or (
+            all([child.has_epsilon() for child in non_terminal_children]) and len(non_terminal_children) > 0)
 
 
 @memoize
@@ -73,4 +73,3 @@ def get_first_of_list(list_of_non_terminals):
         return first + get_first_of_list(list_of_non_terminals[1:])
     else:
         return first
-

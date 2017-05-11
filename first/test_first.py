@@ -1,6 +1,7 @@
 import unittest
-from grammar_elements import *
+
 from first.first_of import get_first
+from grammar_elements import *
 
 
 class TestFirst(unittest.TestCase):

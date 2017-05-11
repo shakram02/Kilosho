@@ -25,7 +25,11 @@ class GrammarElement:
         self.name = name
 
     def __str__(self):
-        return "Name: " + self.name + ", Type: " + self.type.name
+        # return "Name: '" + self.name + ", Type: " + self.type.name
+        return "Name: '" + self.name + "'"
+
+    def __repr__(self):
+        return self.__str__()
 
     def __hash__(self):
         return id(self)
@@ -60,7 +64,7 @@ class Terminal(GrammarElement):
         Creates an epsilon element
         :return: The epsilon object
         """
-        e = Terminal("")
+        e = Terminal('\L')
         e.type = ElementType.Epsilon
         return e
 
@@ -85,11 +89,11 @@ class Terminal(GrammarElement):
 
         return False
 
-    def __str__(self):
-        return str({'name': self.name, 'rule': self.productions, 'type': self.type.name})
-
-    def __repr__(self):
-        return str({'name': self.name, 'rule': self.productions, 'type': self.type.name})
+    # def __str__(self):
+    #     return str({'name': self.name, 'rule': self.productions, 'type': self.type.name})
+    #
+    # def __repr__(self):
+    #     return str({'name': self.name, 'rule': self.productions, 'type': self.type.name})
 
     def __hash__(self):
         return super.__hash__(self)
@@ -125,5 +129,3 @@ class NonTerminal(GrammarElement):
         self.current_production_index += 1
         self.productions.append([other])
         return self
-
-

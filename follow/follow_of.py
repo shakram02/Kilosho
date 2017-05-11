@@ -1,7 +1,6 @@
-from grammar_elements import Terminal, ElementType
 from first.first_of import get_first_of_list, has_epsilon_in_list
+from grammar_elements import Terminal, ElementType
 from grammar_reader import reader
-from pprint import pprint as pp
 
 
 def remove_epsilon_from_list(list):
@@ -42,4 +41,5 @@ E' ::= + T E' | \L
 T ::= F T'
 T' ::= * F T' | \L
 F ::= ( E ) | id""")
-pp([(key.name, len(value)) for key, value in get_follow_table(result).items()])
+
+# pp([(key.name, len(value)) for key, value in get_follow_table(result).items()])

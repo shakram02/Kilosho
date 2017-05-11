@@ -1,6 +1,7 @@
 import unittest
-from grammar_reader import reader
+
 from grammar_elements import ElementType
+from grammar_reader import reader
 
 
 class TestFirst(unittest.TestCase):

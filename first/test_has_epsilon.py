@@ -1,6 +1,7 @@
 import unittest
-from grammar_elements import *
+
 from first.first_of import has_first_epsilon
+from grammar_elements import *
 
 
 class TestHasEpsilon(unittest.TestCase):

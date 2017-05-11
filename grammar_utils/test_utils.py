@@ -1,6 +1,7 @@
 import unittest
-from grammar_utils.get_nonterminal_children import get_non_terminal_children
+
 from grammar_elements import *
+from grammar_utils.get_nonterminal_children import get_non_terminal_children
 
 
 class TestGetNonterminals(unittest.TestCase):

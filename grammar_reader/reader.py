@@ -2,6 +2,7 @@
 Reads the grammar in text and returns Terminals and NonTerminal objects 
 """
 import re
+
 from grammar_elements import Terminal, NonTerminal, ElementType
 
 OR_SYMBOL = '|'
@@ -16,7 +17,7 @@ def from_string(string):
     non_terminals_dict = {}
     non_terminals_list = []
     # split by lines ending in '\n'  not followed by an OR_SYMBOL
-    lines = re.split(r'\n[^' + OR_SYMBOL + ']', string)
+    lines = re.split(r'\n', string)
 
     for line in lines:
 
@@ -58,7 +59,8 @@ def from_string(string):
                     try:
                         production[i] = non_terminals_dict[element.name]
                     except:
-                        raise ValueError('Non terminal "' + element.name + '" is not defined.')
+                        # raise ValueError('Non terminal "' + element.name + '" is not defined.')
+                        pass
 
     # return a list of the NonTerminal objects
     return non_terminals_list
@@ -71,4 +73,3 @@ def from_file(path):
     """
     content = open(path).read()
     return from_string(content)
-

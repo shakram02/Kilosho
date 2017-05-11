@@ -1,5 +1,6 @@
-from grammar_elements import *
 import unittest
+
+from grammar_elements import *
 
 
 class GrammarTests(unittest.TestCase):
@@ -18,4 +19,4 @@ class GrammarTests(unittest.TestCase):
         # x -> a | b
         x.and_with(a).or_with(b)
         self.assertEqual(len(x.productions), 2, "Rule element count mismatch, "
-                                         "should be 2")
+                                                "should be 2")
