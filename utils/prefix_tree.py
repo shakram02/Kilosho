@@ -51,11 +51,6 @@ class PrefixTree:
                 node = PrefixNode(el, 0, None)
                 self.children[el.name] = node
 
-            # alternatives of length 1 will be added directly
-            if len(alt) == 1:
-                node.alts.append(alt)
-                continue
-
             alt_cpy = alt[:]
             del alt[0]
             self.create_chain(node, alt, alt_cpy)
@@ -86,7 +81,13 @@ class PrefixTree:
 
         # Leaf of the tree is the full alternative, and all the previous
         # nodes are the prefix
-        alt_str = PrefixTree.__to_string(full_alt)[0:-1]
+        full_alt_str = PrefixTree.__to_string(full_alt)
+        alt_str = full_alt_str[0:-1]    # The prefix of the current alternative
+
+        # Don't put empty keys if the factor is a single
+        # element and it also exists somewhere else
+        if len(full_alt) == 1:
+            alt_str = PrefixTree.__to_string(full_alt)
 
         start_node.alts.append(full_alt)
         if alt_str not in self.__factored_table.keys():

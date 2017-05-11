@@ -33,6 +33,7 @@ class GrammarElement:
 class OrOperation(GrammarElement):
     def __init__(self):
         super().__init__(ElementType.OrOperation, "")
+        self.type = ElementType.OrOperation
 
 
 class Terminal(GrammarElement):

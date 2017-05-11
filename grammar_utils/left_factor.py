@@ -1,62 +1,86 @@
 from grammar_elements import *
+from utils import prefix_tree
 
 
-def get_left_factored(n: NonTerminal):
-    pass
-
-
-def factor_out(n: NonTerminal):
+def left_factor(n: NonTerminal):
     """
-    Returns the common left factored elements in a given non terminal
-    and also the un-factor-able elements
-    :param n: Non terminal to factor out
-    :return: Common elements in the non terminal
+    :param n: 
+    :return: List of left factored non-terminals  
     """
-    if len(n.rule) == 0:
-        return None
+    tree = prefix_tree.PrefixTree(n)
+    out_non_terminal = NonTerminal(n.name)
+    # Dict. of prefixes its list of non terminals
+    factored = tree.get_factored_out()
+    dash_count = 1
+    for (i, key) in enumerate(factored.keys()):
+        # Returns the prefix as a string and the factored elements, ex. (Given n: NonTerminal("Y"):
+        # 'ab' -> [Terminal("a"), Terminal("b"), NonTerminal("X")], [Terminal("a"), Terminal("b"), Terminal("d")]
+        rules = factored[key]
 
-    sub_elements = __setup_left_factoring(n)
+        # Returns the prefix elements: Terminal("a"), Terminal("b")
+        (prefix_elements, rules) = __remove_prefix(key, rules)
 
-    if len(sub_elements) == 1:
-        return sub_elements[0]
+        # Creates new non-terminals for factored out elements, ex.:
+        # Y'  -> NonTerminal("X")
+        # Y'' -> Terminal("d")
+        non_terminal = __create_factored_non_terminal(n.name, rules, dash_count)
+        dash_count += 1
 
-    common = []
-    uncommon = []
-    prefix_dict = {}
+        # Concatenates newly generated non-terminals with the factored elements
+        # A' will become abY', Y'' will become abY''
+        for element in prefix_elements:
+            out_non_terminal.rule.append(element)
 
-    return common, uncommon
+        out_non_terminal.rule.append(non_terminal)
+
+        # Add an OR operation if there is another non-terminals present
+        if i < len(factored) - 1:
+            out_non_terminal.rule.append(OrOperation())
+
+    return out_non_terminal
 
 
-def get_sublist(x: list, y: list):
+def __remove_prefix(prefix: str, rules: list):
     """
-    Finds a sublist in 2 lists 
-    :return: List containing the intersection between 2 lists
+    Removes the factored prefix from the supplied grammar rules, as they're not removed 
+    in the factoring operation
+    :param prefix: 
+    :param rules: 
+    :return: Common terms that will remain in the source non-terminal
     """
-    common = []
 
-    if len(x) < len(y):
-        shorter_len = len(x)
-    else:
-        shorter_len = len(y)
+    common_terms = []
+    output_rules = []
+    # Extract the prefix rule alone
+    for i in range(0, len(prefix)):
+        common_terms.append(rules[0][i])
 
-    for i in range(0, shorter_len):
-        if x[i] == y[i]:
-            common.append(x[i])
-        else:
-            break
+    for rule in rules:
+        rule_cp = rule[:]
+        # Remove grammar elements from the rule as many as the prefix
+        for i in range(0, len(prefix)):
+            del rule_cp[0]
 
-    return common
+        # If all the rule is factored out, add an epsilon ex. 'ab', 'a' -> a('b'| \L)
+        if len(rule_cp) == 0:
+            rule_cp.append(Terminal.create_epsilon())
+
+        output_rules.append(rule_cp)
+
+    return common_terms, output_rules
 
 
-def __setup_left_factoring(n: NonTerminal):
+def __create_factored_non_terminal(name: str, rules: list, dash_count: int):
     """
-    Prepares for left-factoring, this is moved here for sanity
-    :return: A length-sorted list of grammar sub-lists in the non terminal  
+    Creates the new factored out non-terminals ex. Y', Y'', ...
+    :param name: Name of the original non-terminal to be factored ie. Y
+    :param rules: Grammar elements that were factored out
+    :return: Newly factored non-terminals
     """
-    sub_elements = []
-    # Add all the chunks of a non-terminal to a list
-    # to prepare for left factoring
-    for chunk in n:
-        sub_elements.append(chunk)
+    nt = NonTerminal(name + (dash_count * '\''))
+    for (i, rule) in enumerate(rules):
+        nt.rule.append(rule)
+        if i < len(rules) - 1:
+            nt.rule.append(OrOperation())
 
-    return sub_elements
+    return nt
