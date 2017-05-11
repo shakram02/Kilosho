@@ -17,13 +17,25 @@ def left_factor(n: NonTerminal):
         # 'ab' -> [Terminal("a"), Terminal("b"), NonTerminal("X")], [Terminal("a"), Terminal("b"), Terminal("d")]
         rules = factored[key]
 
+        # Don't create a rule if the only alternative is the prefix itself
+        if len(rules) == 1 and __to_string(rules[0]) == key:
+
+            for el in rules[0]:
+                out_non_terminal.rule.append(el)
+                # Add an OR operation if there is another non-terminals present
+
+            if i < len(factored) - 1:
+                out_non_terminal.rule.append(OrOperation())
+
+            continue
+
         # Returns the prefix elements: Terminal("a"), Terminal("b")
-        (prefix_elements, rules) = __remove_prefix(key, rules)
+        (prefix_elements, prefixless_rules) = __remove_prefix(key, rules)
 
         # Creates new non-terminals for factored out elements, ex.:
         # Y'  -> NonTerminal("X")
         # Y'' -> Terminal("d")
-        non_terminal = __create_factored_non_terminal(n.name, rules, dash_count)
+        non_terminal = __create_factored_non_terminal(n.name, prefixless_rules, dash_count)
         dash_count += 1
 
         # Concatenates newly generated non-terminals with the factored elements
@@ -57,6 +69,7 @@ def __remove_prefix(prefix: str, rules: list):
 
     for rule in rules:
         rule_cp = rule[:]
+
         # Remove grammar elements from the rule as many as the prefix
         for i in range(0, len(prefix)):
             del rule_cp[0]
@@ -84,3 +97,10 @@ def __create_factored_non_terminal(name: str, rules: list, dash_count: int):
             nt.rule.append(OrOperation())
 
     return nt
+
+
+def __to_string(alternative):
+    alt_str = ""
+    for el in alternative:
+        alt_str += el.name
+    return alt_str
