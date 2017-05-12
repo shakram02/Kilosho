@@ -34,9 +34,6 @@ def __first_of(parent: GrammarElement):
             if i == 0 and current_element.type == ElementType.Terminal:
                 result.append(current_element)
 
-            if current_element in __first_of_visited:
-                continue
-
             # Met a NonTerminal object in the first of a production,
             #  recursively check if `el` is in the `first` of the following
             elif (i == 0) and current_element.type == ElementType.NonTerminal:

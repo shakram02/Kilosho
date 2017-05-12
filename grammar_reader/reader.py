@@ -73,3 +73,14 @@ def from_file(path):
     """
     content = open(path).read()
     return from_string(content)
+
+
+def get_terminals(non_terminals):
+    result = set()
+    for non_terminal in non_terminals:
+        for production in non_terminal.productions:
+            for element in production:
+                if element.type == ElementType.Terminal:
+                    result.add(element.name)
+    result.add('$')
+    return list(result)

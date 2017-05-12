@@ -10,6 +10,7 @@ class ElementType(Enum):
     Terminal = 2
     OrOperation = 3
     NonTerminal = 4
+    Dollar = 5
 
 
 # Abstract class
@@ -67,6 +68,17 @@ class Terminal(GrammarElement):
         e = Terminal('\L')
         e.type = ElementType.Epsilon
         return e
+
+    @staticmethod
+    def create_dollar():
+        """
+        Creates a dollar element
+        Represents the end of input
+        :return: The dollar object
+        """
+        d = Terminal('$')
+        d.type = ElementType.Dollar
+        return d
 
     def __eq__(self, other):
         if self.type == ElementType.Epsilon and other.type == ElementType.Epsilon:
